@@ -11,7 +11,7 @@ INCLUDE=-I../include
 LFLAGS=-L../lib
 
 # Define the C source files
-SRCS = main.c getio.c
+SRCS = main.c $(wildcard ../lib/*c)
 
 # Define the C Object files
 # This uses Suffix Replacement within a macro:
@@ -23,22 +23,22 @@ OBJS=$(SRCS:.c=.o)
 
 MAIN=main
 
-.PHONY: depend clean
-
-all: $(MAIN)
-
-$(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDE) -o $(MAIN) $(OBJS) $(LFLAGS)
+all: $(MAIN) $(SRCS)
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
 # the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
 # (see the gnu make manual section about automatic variables)
-.c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
+.c.o: 
+	$(CC) $(CFLAGS) $(INCLUDE) -c $<  -o $@
+	
+$(MAIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $(MAIN) $(OBJS) $(LFLAGS) $(INCLUDE)
+
+.PHONY: depend clean
 
 clean:
-	$(RM) *.o *~ $(MAIN)
+	del *.o *~ $(MAIN) *.exe 
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^
